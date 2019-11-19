@@ -9,5 +9,5 @@ exports.getUserByUsername = (req, res, next) => {
       
       res.status(200).send(user[0])
     })
-    .catch( next);
+    .catch((next));
 };

@@ -1,7 +1,6 @@
 const connection = require('../db/connection')
 
 exports.selectArticleByArticleId =(article_id)=>{
-  console.log('in the model')
 return connection("articles")
   .where("article_id", article_id)
   .then(article => {
@@ -12,7 +11,7 @@ return connection("articles")
         status: 404,
         msg: "Error status 404"
       });
-    } else { console.log(article)
+    } else {
       return article;
     }
   });
