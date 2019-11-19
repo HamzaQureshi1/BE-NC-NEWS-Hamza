@@ -1,4 +1,4 @@
-\q# Northcoders News API
+# Northcoders News API
 
 **You can clone this repository but do not fork it**
 
