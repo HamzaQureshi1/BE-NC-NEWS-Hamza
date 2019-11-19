@@ -22,17 +22,19 @@ describe('/', () => {
       const invalidMethods = ['patch','post','put','delete'];
       const methodsPromises = invalidMethods.map(methods => {
         return request(app)[methods]('/api/topics').expect(405).then(response => {
+          
           expect(response.body.msg).to.equal(
              "invalid method"
           )
         })
       })
+      return Promise.all(methodsPromises)
   });
   
   
 });
 describe("/users/:username", () => {
-  it('GET :404 username is invalid', () => {
+  it('GET :404 username does not exist', () => {
         return request(app).get('/api/users/skljdfsahhhhj').expect(404).then(response => {
           
           expect(response.body.msg).to.equal( "Error status 404")
@@ -54,19 +56,50 @@ describe("/users/:username", () => {
             })
           })
       })
-      it('GET :404 username is invalid', () => {
+      it('GET :404 username does not exist', () => {
         return request(app).get('/api/users/skljdfsahhhhj').expect(404).then(response => {
           
           expect(response.body.msg).to.equal( "Error status 404")
         })
         
       });
+      it('405 error for invalid method', () => {
+      const invalidMethods = ['patch','post','put','delete'];
+      const methodsPromises = invalidMethods.map(methods => {
+        return request(app)[methods]('/api/users/butter_bridge').expect(405).then(response => {
+          
+          expect(response.body.msg).to.equal(
+             "invalid method"
+          )
+        })
+      })
 });
 describe('/articles/:articles_id', () => {
   it('GET 200 returns article by article_id', () => {
     return request(app).get("/api/articles/3").expect(200).then(response => {expect(response.body.article).to.be.an('array')
+    expect(response.body.article[0]).to.eql({
+      article_id: 3,
+      title: "Eight pug gifs that remind me of mitch",
+      body: "some gifs",
+      votes: 0,
+      topic: "mitch",
+      author: "icellusedkars",
+      created_at: "2010-11-17T12:21:54.171Z"
+    });
   expect(response.body.article[0]).to.have.keys(["article_id", "title", "body", "votes", "topic", "author", "created_at"])})
   });
-  
+  it('GET 404 article_id does not exist', () => {return request(app).get("/api/articles/37").expect(404).then(response => {expect(response.body.msg).to.equal("Error status 404")})
+    
+  });
+  it.only("GET 400 article_id is bad", () => {
+    return request(app)
+      .get("/api/articles/dog")
+      .expect(400)
+      .then(response => { 
+        
+        expect(response.body.msg).to.equal("select * from \"articles\" where \"article_id\" = $1 - invalid input syntax for integer: \"dog\"");
+      });
+  });
+});
 });
 });
