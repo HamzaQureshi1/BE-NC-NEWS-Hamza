@@ -83,7 +83,6 @@ describe("/", () => {
         .get("/api/articles/1")
         .expect(200)
         .then(response => {
-          
           expect(response.body.article).to.be.an("array");
           expect(response.body.article[0]).to.eql({
             article_id: 1,
@@ -120,14 +119,77 @@ describe("/", () => {
         .get("/api/articles/dog")
         .expect(400)
         .then(response => {
-          
           expect(response.body.msg).to.equal(
             'select "articles".*, count("comments"."comments_id") as "comment_count" from "articles" left join "comments" on "articles"."article_id" = "comments"."article_id" where "articles"."article_id" = $1 group by "articles"."article_id" - invalid input syntax for integer: "dog"'
           );
         });
     });
-    it('PATCH : 200 and responds with article with an updated votes ', () => {return request(app).patch("/api/articles/1").send({inc_votes: 10}).expect(200).then((body) => {console.log(body)})
+    it("PATCH : 200 and responds with article with an updated votes ", () => {
+      return request(app)
+        .patch("/api/articles/1")
+        .send({ inc_votes: 10 })
+        .expect(200)
+        .then(response => {
+          expect(response.body.article.articles).to.eql({
+            article_id: 1,
+            title: "Living in the shadow of a great man",
+            body: "I find this existence challenging",
+            votes: 110,
+            topic: "mitch",
+            author: "butter_bridge",
+            created_at: "2018-11-15T12:21:54.171Z",
+            
+          });
+        });
+    });
+    it("PATCH : 200 and responds with article with an updated votes ", () => {
+      return request(app)
+        .patch("/api/articles/1")
+        .send({ inc_votes: -10 })
+        .expect(200)
+        .then(response => {
+          expect(response.body.article.articles).to.eql({
+            article_id: 1,
+            title: "Living in the shadow of a great man",
+            body: "I find this existence challenging",
+            votes: 90,
+            topic: "mitch",
+            author: "butter_bridge",
+            created_at: "2018-11-15T12:21:54.171Z"
+          });
+        });
+    });
+  });
+  describe('/articles/:article_id/comments', () => {
+    it('GET 200 returns an array of comments for the given article_id', () => {
+      return request(app).get('/api/articles/5/comments').expect(200).then(response => {
+      //   expect(response.body.comments).to.eql([{
+      //     comments_id:14,
+      //     author:"icellusedkars",
+      //     article_id:5,
+      //     votes:16,
+      //     created_at: 2004-11-25 12:36:03.389+00,
+      //     body: "What do you see? I have no idea where this will lead us.  This place I speak of, is known as the Black Lodge"
+      //   },
+      // {comments_id:15,
+      //     author:"butter_bridge",
+      //     article_id:5,
+      //     votes:1,
+      //     created_at: 2003-11-26 12:36:03.389+00,
+      //     body: "I am 100% sure that we're not completely sure."
+
+      // }])
+      expect(response.body.comments[0]).to.have.keys(
+        "comments_id",
+        "author",
+        "article_id",
+        "votes",
+        "created_at",
+        "body"
+      );
+      })
       
     });
+    
   });
 });

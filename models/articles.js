@@ -35,6 +35,10 @@ exports.changeVotes = (changes, article_id) => {
           status: 404,
           msg: `Error status 404`
         });
-      } else return {articles: articles}
+      } else return {articles: articles[0]}
     });
 };
+
+exports.fetchCommentsByArticleId = (article_id) => {return connection.select('*').from("comments").where("comments.article_id", "=", article_id).then(comments =>{return comments})
+  
+}
