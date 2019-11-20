@@ -126,6 +126,8 @@ describe("/", () => {
           );
         });
     });
-    
+    it('PATCH : 200 and responds with article with an updated votes ', () => {return request(app).patch("/api/articles/1").send({inc_votes: 10}).expect(200).then((body) => {console.log(body)})
+      
+    });
   });
 });
