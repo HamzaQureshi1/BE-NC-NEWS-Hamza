@@ -33,9 +33,13 @@ describe("/", () => {
       });
       return Promise.all(methodsPromises);
     });
-    it('GET 404 incorrect route', () => {
-      return request(app).get('/api/toics').expect(404).then((response) => {expect(response.body.msg).to.equal(`invalid route`)})
-      
+    it("GET 404 incorrect route", () => {
+      return request(app)
+        .get("/api/toics")
+        .expect(404)
+        .then(response => {
+          expect(response.body.msg).to.equal(`invalid route`);
+        });
     });
   });
   describe("/users/:username", () => {
@@ -141,8 +145,7 @@ describe("/", () => {
             votes: 110,
             topic: "mitch",
             author: "butter_bridge",
-            created_at: "2018-11-15T12:21:54.171Z",
-            
+            created_at: "2018-11-15T12:21:54.171Z"
           });
         });
     });
@@ -163,10 +166,10 @@ describe("/", () => {
           });
         });
     });
-       it("PATCH : 200 and responds with article with an updated votes ", () => {
+    it("PATCH : 200 and responds with article with an updated votes ", () => {
       return request(app)
         .patch("/api/articles/1")
-        
+
         .expect(200)
         .then(response => {
           expect(response.body.article.articles).to.eql({
@@ -180,80 +183,88 @@ describe("/", () => {
           });
         });
     });
-     it('PATCH:400 if passed invalid data type for inc_votes', () => {
+    it("PATCH:400 if passed invalid data type for inc_votes", () => {
       return request(app)
-        .patch('/api/articles/1')
-        .send({inc_votes : "hello_world"})
+        .patch("/api/articles/1")
+        .send({ inc_votes: "hello_world" })
         .expect(400)
-        .then((response) => {
+        .then(response => {
           expect(response.body.msg).to.equal(
             'update "articles" set "votes" = "votes" + $1 where "articles"."article_id" = $2 returning * - invalid input syntax for integer: "NaN"'
           );
-        })
-  });
-  it('PATCH 404 if passed and article_id that does not exist', () => {
-    return request(app).patch('/api/articles/9999').send({inc_votes : "10"}).expect(404).then((response) =>{
-      expect(response.body.msg).to.equal(`Error status 404`)
-    })
-    
-  });
-  it("405 error for invalid method", () => {
-    const invalidMethods = [ "post", "put", "delete"];
-    const methodsPromises = invalidMethods.map(methods => {
-      return request(app)
-        [methods]("/api/articles/1")
-        .expect(405)
-        .then(response => {
-          expect(response.body.msg).to.equal("invalid method");
         });
     });
+    it("PATCH 404 if passed and article_id that does not exist", () => {
+      return request(app)
+        .patch("/api/articles/9999")
+        .send({ inc_votes: "10" })
+        .expect(404)
+        .then(response => {
+          expect(response.body.msg).to.equal(`Error status 404`);
+        });
+    });
+    it("405 error for invalid method", () => {
+      const invalidMethods = ["post", "put", "delete"];
+      const methodsPromises = invalidMethods.map(methods => {
+        return request(app)
+          [methods]("/api/articles/1")
+          .expect(405)
+          .then(response => {
+            expect(response.body.msg).to.equal("invalid method");
+          });
+      });
+    });
   });
- 
-});
-  describe('/articles/:article_id/comments', () => {
-    it('GET 200 returns an array of comments for the given article_id', () => {
-      return request(app).get('/api/articles/5/comments').expect(200).then(response => {
-      //   expect(response.body.comments).to.eql([{
-      //     comments_id:14,
-      //     author:"icellusedkars",
-      //     article_id:5,
-      //     votes:16,
-      //     created_at: 2004-11-25 12:36:03.389+00,
-      //     body: "What do you see? I have no idea where this will lead us.  This place I speak of, is known as the Black Lodge"
-      //   },
-      // {comments_id:15,
-      //     author:"butter_bridge",
-      //     article_id:5,
-      //     votes:1,
-      //     created_at: 2003-11-26 12:36:03.389+00,
-      //     body: "I am 100% sure that we're not completely sure."
+  describe("/articles/:article_id/comments", () => {
+    it("GET 200 returns an array of comments for the given article_id", () => {
+      return request(app)
+        .get("/api/articles/5/comments")
+        .expect(200)
+        .then(response => {
+          //   expect(response.body.comments).to.eql([{
+          //     comments_id:14,
+          //     author:"icellusedkars",
+          //     article_id:5,
+          //     votes:16,
+          //     created_at: 2004-11-25 12:36:03.389+00,
+          //     body: "What do you see? I have no idea where this will lead us.  This place I speak of, is known as the Black Lodge"
+          //   },
+          // {comments_id:15,
+          //     author:"butter_bridge",
+          //     article_id:5,
+          //     votes:1,
+          //     created_at: 2003-11-26 12:36:03.389+00,
+          //     body: "I am 100% sure that we're not completely sure."
 
-      // }])
-      expect(response.body.comments[0]).to.have.keys(
-        "comments_id",
-        "author",
-        "article_id",
-        "votes",
-        "created_at",
-        "body"
-      );
-      expect(response.body.comments).to.be.an("array")
-      })
-      
+          // }])
+          expect(response.body.comments[0]).to.have.keys(
+            "comments_id",
+            "author",
+            "article_id",
+            "votes",
+            "created_at",
+            "body"
+          );
+          expect(response.body.comments).to.be.an("array");
+        });
     });
-    it.only('GET 200 returns an array of comments sorted by created_at as default', () => {return request(app).get('/api/articles/5/comments?order=asc').expect(200).then(response => {
-      expect(response.body.comments[0]).to.eql({
-        comments_id: 15, 
-        author: "butter_bridge",
-        article_id: 5,
-        votes:1,
-        created_at: "2003-11-26T12:36:03.389Z",
-        body:"I am 100% sure that we're not completely sure."
-      })
-    })
-      
+    it("GET 200 returns an array of comments sorted by created_at as default and in descending order by default", () => {
+      return request(app)
+        .get("/api/articles/5/comments")
+        .expect(200)
+        .then(response => {
+          expect(response.body.comments[0]).to.eql({
+            comments_id: 14,
+            author: "icellusedkars",
+            article_id: 5,
+            votes: 16,
+            created_at: "2004-11-25T12:36:03.389Z",
+            body:
+              "What do you see? I have no idea where this will lead us. This place I speak of, is known as the Black Lodge."
+          });
+        });
     });
-    it.only("GET 200 returns an array of comments sorted by created_at as default", () => {
+    it("GET 200 returns an array of comments sorted by votes and ordered ascending", () => {
       return request(app)
         .get("/api/articles/5/comments?sort_by=votes&order=asc")
         .expect(200)
@@ -268,16 +279,146 @@ describe("/", () => {
           });
         });
     });
-   it('status:201 responds with object of posted comment', () => {
+    it("GET 400 returnns error when passed sort_by and order which do not exist", () => {
       return request(app)
-        .post('/api/articles/1/comments?sort_by=votes')
-        .send({ username: 'icellusedkars', body: 'Yo'})
+        .get("/api/articles/5/comments?sort_by=hello&order=afsa")
+        .expect(400)
+        .then(response => {
+          expect(response.body.msg).to.eql(
+            'select * from "comments" where "comments"."article_id" = $1 order by "hello" asc - column "hello" does not exist'
+          );
+        });
+    });
+    it("status:201 responds with object of posted comment", () => {
+      return request(app)
+        .post("/api/articles/1/comments?sort_by=votes")
+        .send({ username: "icellusedkars", body: "Yo" })
         .expect(201)
-        .then((response) => {
-          expect(response.body.comment).to.be.an('object');
-          expect(response.body.comment.author).to.equal('icellusedkars');
-          expect(response.body.comment.body).to.equal('Yo');
-        })
+        .then(response => {
+          expect(response.body.comment).to.be.an("object");
+          expect(response.body.comment.author).to.equal("icellusedkars");
+          expect(response.body.comment.body).to.equal("Yo");
+        });
+    });
+    it("405 error for invalid method", () => {
+      const invalidMethods = ["patch", "put", "delete"];
+      const methodsPromises = invalidMethods.map(methods => {
+        return request(app)
+          [methods]("/api/articles/1/comments")
+          .expect(405)
+          .then(response => {
+            expect(response.body.msg).to.equal("invalid method");
+          });
+      });
+    });
   });
-});
+  describe("/articles", () => {
+    it("GET 200 returns an articles array of artcile objects ", () => {
+      return request(app)
+        .get("/api/articles")
+        .expect(200)
+        .then(response => {
+          expect(response.body.articles[0]).to.have.keys(
+            "author",
+            "title",
+            "article_id",
+            "topic",
+            "created_at",
+            "votes",
+            "comment_count"
+          );
+        });
+    });
+  });
+  describe("/comments/:comment_id", () => {
+    it("PATCH 200 and responds with comment with updated votes", () => {
+      return request(app)
+        .patch("/api/comments/10")
+        .send({ inc_votes: 10 })
+        .expect(200)
+        .then(response => {
+          expect(response.body.comment.comment).to.eql({
+            comments_id: 10,
+            author: "icellusedkars",
+            article_id: 1,
+            votes: 10,
+            created_at: "2008-11-24T12:36:03.389Z",
+            body: "git push origin master"
+          });
+        });
+    });
+    it("PATCH 200 and responds with comment with updated votes", () => {
+      return request(app)
+        .patch("/api/comments/10")
+        .send({ inc_votes: -5 })
+        .expect(200)
+        .then(response => {
+          expect(response.body.comment.comment).to.eql({
+            comments_id: 10,
+            author: "icellusedkars",
+            article_id: 1,
+            votes: -5,
+            created_at: "2008-11-24T12:36:03.389Z",
+            body: "git push origin master"
+          });
+        });
+    });
+    it("PATCH 400 and responds with comment with updated votes", () => {
+      return request(app)
+        .patch("/api/comments/10")
+        .send({ inc_votes: "hello_world" })
+        .expect(400)
+        .then(response => {
+          expect(response.body.msg).to.eql(
+            'update "comments" set "votes" = "votes" + $1 where "comments"."comments_id" = $2 returning * - invalid input syntax for integer: "NaN"'
+          );
+        });
+    });
+    it("PATCH 200 and responds with comment with updated votes", () => {
+      return request(app)
+        .patch("/api/comments/10")
+
+        .expect(200)
+        .then(response => {
+          expect(response.body.comment.comment).to.eql({
+            comments_id: 10,
+            author: "icellusedkars",
+            article_id: 1,
+            votes: 0,
+            created_at: "2008-11-24T12:36:03.389Z",
+            body: "git push origin master"
+          });
+        });
+    });
+    it("PATCH 404 when comment_id cant b found", () => {
+      return request(app)
+        .patch("/api/comments/1000")
+.send({inc_votes:10})
+        .expect(404)
+        .then(response => {
+          expect(response.body.msg).to.eql(`Error status 404`);
+        });
+    });
+
+    it("DELETE 204 deletes by comment_id and returns no content ", () => {
+      return request(app)
+        .delete("/api/comments/10")
+        .expect(204);
+    });
+    it("DELETE 404 when comment_id cant be found ", () => {
+      return request(app)
+        .delete("/api/comments/1000")
+        .expect(404).then((response) => {expect(response.body.msg).to.eql(`Error status 404`)});
+    });
+     it("DELETE 400 when passed an invalid comment_id ", () => {
+       return request(app)
+         .delete("/api/comments/helo")
+         .expect(400)
+         .then(response => {
+           expect(response.body.msg).to.eql(
+             'delete from "comments" where "comments_id" = $1 - invalid input syntax for integer: "helo"'
+           );
+         });
+     });
+  });
 });

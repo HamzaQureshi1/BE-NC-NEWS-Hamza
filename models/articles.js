@@ -22,7 +22,7 @@ exports.selectArticleByArticleId = article_id => {
 };
 
 exports.changeVotes = (changes, article_id) => {
-  console.log(changes);
+  
   return connection
     .select("*")
     .from("articles")
@@ -35,25 +35,31 @@ exports.changeVotes = (changes, article_id) => {
           status: 404,
           msg: `Error status 404`
         });
-      } else return {articles: articles[0]}
+      } else return { articles: articles[0] };
     });
 };
 
-exports.fetchCommentsByArticleId = (sort_by, order, article_id) => {return connection.select('*').from("comments").where("comments.article_id", "=", article_id).orderBy(sort_by || 'created_at', order).then(comments =>{return comments})
-  
-}
+exports.fetchCommentsByArticleId = (sort_by, order, article_id) => {
+  return connection
+    .select("*")
+    .from("comments")
+    .where("comments.article_id", "=", article_id)
+    .orderBy(sort_by || "created_at", order || "desc")
+    .then(comments => {
+      return comments;
+    });
+};
 
 exports.addCommentByArticleId = (article_id, username, body) => {
-  
-return connection.insert({body:body, author:username, article_id:article_id}).into("comments").returning('*').then(
-  
-  
-  
-  ([comment]) => {return comment}
-  
-  
-  )
-  
-      
-        
-}
+  return connection
+    .insert({ body: body, author: username, article_id: article_id })
+    .into("comments")
+    .returning("*")
+    .then(([comment]) => {
+      return comment;
+    });
+};
+
+exports.fetchAllArticles = () => {
+  return connection.select('author','title','article_id','topic','created_at','votes').from('articles').returning('*')
+};

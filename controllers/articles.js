@@ -1,4 +1,4 @@
-const { selectArticleByArticleId, changeVotes, fetchCommentsByArticleId, addCommentByArticleId } = require("../models/articles");
+const { selectArticleByArticleId, changeVotes, fetchCommentsByArticleId, addCommentByArticleId, fetchAllArticles } = require("../models/articles");
 
 exports.getArticleByArticleId = (req, res, next) => {
   const { article_id } = req.params;
@@ -31,4 +31,10 @@ exports.postCommentByArticleId =(req,res,next) => {
   
   })
     .catch(next);
+}
+
+exports.getAllArticles = (req,res,next) => {
+  fetchAllArticles().then(articles => {
+    res.status(200).send({articles})
+  }).catch(next)
 }
