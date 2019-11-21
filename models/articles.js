@@ -39,6 +39,21 @@ exports.changeVotes = (changes, article_id) => {
     });
 };
 
-exports.fetchCommentsByArticleId = (article_id) => {return connection.select('*').from("comments").where("comments.article_id", "=", article_id).then(comments =>{return comments})
+exports.fetchCommentsByArticleId = (sort_by, order, article_id) => {return connection.select('*').from("comments").where("comments.article_id", "=", article_id).orderBy(sort_by || 'created_at', order).then(comments =>{return comments})
   
+}
+
+exports.addCommentByArticleId = (article_id, username, body) => {
+  
+return connection.insert({body:body, author:username, article_id:article_id}).into("comments").returning('*').then(
+  
+  
+  
+  ([comment]) => {return comment}
+  
+  
+  )
+  
+      
+        
 }

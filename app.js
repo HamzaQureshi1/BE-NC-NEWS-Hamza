@@ -7,6 +7,8 @@ app.use(express.json())
 app.use('/api',apiRouter)
 app.use(handleCustomErrors)
 app.use(psqlErrors)
+app.use(invalidRoute)
+app.use(handle405Errors)
 // app.all("/*", (req, res, next) => res.status(404).send("Route not found"));this will catch any routes not found in our app
 
 

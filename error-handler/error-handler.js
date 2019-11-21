@@ -19,6 +19,9 @@ exports.psqlErrors = (err, req, res, next) => {
     else {next(err)}
   
 }
+
+
+
 exports.handle405Errors = (req,res,next) => {
   
   res.status(405).send({msg: "invalid method"})

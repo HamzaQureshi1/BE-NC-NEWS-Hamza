@@ -33,6 +33,10 @@ describe("/", () => {
       });
       return Promise.all(methodsPromises);
     });
+    it('GET 404 incorrect route', () => {
+      return request(app).get('/api/toics').expect(404).then((response) => {expect(response.body.msg).to.equal(`invalid route`)})
+      
+    });
   });
   describe("/users/:username", () => {
     it("GET :404 username does not exist", () => {
@@ -159,7 +163,53 @@ describe("/", () => {
           });
         });
     });
+       it("PATCH : 200 and responds with article with an updated votes ", () => {
+      return request(app)
+        .patch("/api/articles/1")
+        
+        .expect(200)
+        .then(response => {
+          expect(response.body.article.articles).to.eql({
+            article_id: 1,
+            title: "Living in the shadow of a great man",
+            body: "I find this existence challenging",
+            votes: 100,
+            topic: "mitch",
+            author: "butter_bridge",
+            created_at: "2018-11-15T12:21:54.171Z"
+          });
+        });
+    });
+     it('PATCH:400 if passed invalid data type for inc_votes', () => {
+      return request(app)
+        .patch('/api/articles/1')
+        .send({inc_votes : "hello_world"})
+        .expect(400)
+        .then((response) => {
+          expect(response.body.msg).to.equal(
+            'update "articles" set "votes" = "votes" + $1 where "articles"."article_id" = $2 returning * - invalid input syntax for integer: "NaN"'
+          );
+        })
   });
+  it('PATCH 404 if passed and article_id that does not exist', () => {
+    return request(app).patch('/api/articles/9999').send({inc_votes : "10"}).expect(404).then((response) =>{
+      expect(response.body.msg).to.equal(`Error status 404`)
+    })
+    
+  });
+  it("405 error for invalid method", () => {
+    const invalidMethods = [ "post", "put", "delete"];
+    const methodsPromises = invalidMethods.map(methods => {
+      return request(app)
+        [methods]("/api/articles/1")
+        .expect(405)
+        .then(response => {
+          expect(response.body.msg).to.equal("invalid method");
+        });
+    });
+  });
+ 
+});
   describe('/articles/:article_id/comments', () => {
     it('GET 200 returns an array of comments for the given article_id', () => {
       return request(app).get('/api/articles/5/comments').expect(200).then(response => {
@@ -187,9 +237,47 @@ describe("/", () => {
         "created_at",
         "body"
       );
+      expect(response.body.comments).to.be.an("array")
       })
       
     });
-    
+    it.only('GET 200 returns an array of comments sorted by created_at as default', () => {return request(app).get('/api/articles/5/comments?order=asc').expect(200).then(response => {
+      expect(response.body.comments[0]).to.eql({
+        comments_id: 15, 
+        author: "butter_bridge",
+        article_id: 5,
+        votes:1,
+        created_at: "2003-11-26T12:36:03.389Z",
+        body:"I am 100% sure that we're not completely sure."
+      })
+    })
+      
+    });
+    it.only("GET 200 returns an array of comments sorted by created_at as default", () => {
+      return request(app)
+        .get("/api/articles/5/comments?sort_by=votes&order=asc")
+        .expect(200)
+        .then(response => {
+          expect(response.body.comments[0]).to.eql({
+            comments_id: 15,
+            author: "butter_bridge",
+            article_id: 5,
+            votes: 1,
+            created_at: "2003-11-26T12:36:03.389Z",
+            body: "I am 100% sure that we're not completely sure."
+          });
+        });
+    });
+   it('status:201 responds with object of posted comment', () => {
+      return request(app)
+        .post('/api/articles/1/comments?sort_by=votes')
+        .send({ username: 'icellusedkars', body: 'Yo'})
+        .expect(201)
+        .then((response) => {
+          expect(response.body.comment).to.be.an('object');
+          expect(response.body.comment.author).to.equal('icellusedkars');
+          expect(response.body.comment.body).to.equal('Yo');
+        })
   });
+});
 });
