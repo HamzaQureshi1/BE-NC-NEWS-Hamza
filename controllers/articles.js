@@ -3,20 +3,21 @@ const { selectArticleByArticleId, changeVotes, fetchCommentsByArticleId, addComm
 exports.getArticleByArticleId = (req, res, next) => {
   const { article_id } = req.params;
   selectArticleByArticleId(article_id)
-    .then(article => res.status(200).send({ article }))
+    .then(article => res.status(200).send( article ))
     .catch(next);
 };
 
 exports.updateVotes = (req,res,next) => {
 const changes = (req.body)
 const {article_id} = req.params
-changeVotes(changes, article_id).then((article) => res.status(200).send({article})).catch(next)
+changeVotes(changes, article_id).then((article) => res.status(200).send(article)).catch(next)
 }
 
 exports.getCommentsByArticleId = (req,res,next) => {
   const {sort_by,order} = req.query
 const {article_id} = req.params
-fetchCommentsByArticleId(sort_by,order, article_id).then((comments) =>res.status(200).send({comments})).catch(next)
+fetchCommentsByArticleId(sort_by,order, article_id).then((comments) =>
+res.status(200).send(comments)).catch(next)
 }
 
 exports.postCommentByArticleId =(req,res,next) => {

@@ -91,8 +91,10 @@ describe("/", () => {
         .get("/api/articles/1")
         .expect(200)
         .then(response => {
-          expect(response.body.article).to.be.an("array");
-          expect(response.body.article[0]).to.eql({
+          expect(response.body).to.be.an("object");
+          expect(response.body).to.eql({
+            article:
+            {
             article_id: 1,
             title: "Living in the shadow of a great man",
             body: "I find this existence challenging",
@@ -101,8 +103,8 @@ describe("/", () => {
             author: "butter_bridge",
             created_at: "2018-11-15T12:21:54.171Z",
             comment_count: "13"
-          });
-          expect(response.body.article[0]).to.have.keys([
+          }});
+          expect(response.body.article).to.have.keys([
             "article_id",
             "title",
             "body",
@@ -128,7 +130,7 @@ describe("/", () => {
         .expect(400)
         .then(response => {
           expect(response.body.msg).to.equal(
-            'select "articles".*, count("comments"."comments_id") as "comment_count" from "articles" left join "comments" on "articles"."article_id" = "comments"."article_id" where "articles"."article_id" = $1 group by "articles"."article_id" - invalid input syntax for integer: "dog"'
+            'select "articles".*, count("comments"."comment_id") as "comment_count" from "articles" left join "comments" on "articles"."article_id" = "comments"."article_id" where "articles"."article_id" = $1 group by "articles"."article_id" - invalid input syntax for integer: "dog"'
           );
         });
     });
@@ -138,7 +140,8 @@ describe("/", () => {
         .send({ inc_votes: 10 })
         .expect(200)
         .then(response => {
-          expect(response.body.article.articles).to.eql({
+          expect(response.body).to.eql({
+            article:{
             article_id: 1,
             title: "Living in the shadow of a great man",
             body: "I find this existence challenging",
@@ -146,7 +149,7 @@ describe("/", () => {
             topic: "mitch",
             author: "butter_bridge",
             created_at: "2018-11-15T12:21:54.171Z"
-          });
+          }});
         });
     });
     it("PATCH : 200 and responds with article with an updated votes ", () => {
@@ -155,7 +158,8 @@ describe("/", () => {
         .send({ inc_votes: -10 })
         .expect(200)
         .then(response => {
-          expect(response.body.article.articles).to.eql({
+          expect(response.body).to.eql({
+            article:{
             article_id: 1,
             title: "Living in the shadow of a great man",
             body: "I find this existence challenging",
@@ -163,7 +167,7 @@ describe("/", () => {
             topic: "mitch",
             author: "butter_bridge",
             created_at: "2018-11-15T12:21:54.171Z"
-          });
+          }});
         });
     });
     it("PATCH : 200 and responds with article with an updated votes ", () => {
@@ -172,7 +176,7 @@ describe("/", () => {
 
         .expect(200)
         .then(response => {
-          expect(response.body.article.articles).to.eql({
+          expect(response.body).to.eql({article:{
             article_id: 1,
             title: "Living in the shadow of a great man",
             body: "I find this existence challenging",
@@ -180,7 +184,7 @@ describe("/", () => {
             topic: "mitch",
             author: "butter_bridge",
             created_at: "2018-11-15T12:21:54.171Z"
-          });
+          }});
         });
     });
     it("PATCH:400 if passed invalid data type for inc_votes", () => {
@@ -238,9 +242,9 @@ describe("/", () => {
 
           // }])
           expect(response.body.comments[0]).to.have.keys(
-            "comments_id",
+            "comment_id",
             "author",
-            "article_id",
+            
             "votes",
             "created_at",
             "body"
@@ -254,9 +258,9 @@ describe("/", () => {
         .expect(200)
         .then(response => {
           expect(response.body.comments[0]).to.eql({
-            comments_id: 14,
+            comment_id: 14,
             author: "icellusedkars",
-            article_id: 5,
+            
             votes: 16,
             created_at: "2004-11-25T12:36:03.389Z",
             body:
@@ -270,9 +274,9 @@ describe("/", () => {
         .expect(200)
         .then(response => {
           expect(response.body.comments[0]).to.eql({
-            comments_id: 15,
+            comment_id: 15,
             author: "butter_bridge",
-            article_id: 5,
+            
             votes: 1,
             created_at: "2003-11-26T12:36:03.389Z",
             body: "I am 100% sure that we're not completely sure."
@@ -285,7 +289,7 @@ describe("/", () => {
         .expect(400)
         .then(response => {
           expect(response.body.msg).to.eql(
-            'select * from "comments" where "comments"."article_id" = $1 order by "hello" asc - column "hello" does not exist'
+            'select "comments"."comment_id", "comments"."votes", "comments"."created_at", "comments"."author", "comments"."body" from "comments" where "comments"."article_id" = $1 order by "hello" asc - column "hello" does not exist'
           );
         });
     });
