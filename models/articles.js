@@ -22,7 +22,6 @@ exports.selectArticleByArticleId = article_id => {
 };
 
 exports.changeVotes = (changes, article_id) => {
-  
   return connection
     .select("*")
     .from("articles")
@@ -60,6 +59,31 @@ exports.addCommentByArticleId = (article_id, username, body) => {
     });
 };
 
-exports.fetchAllArticles = () => {
-  return connection.select('author','title','article_id','topic','created_at','votes').from('articles').returning('*')
+exports.fetchAllArticles = (sort_by, order, author, topic) => {
+  console.log(author)
+  return connection
+    .select(
+      "articles.article_id",
+      "articles.author",
+      "articles.created_at",
+      "articles.title",
+      "articles.topic",
+      "articles.votes"
+    )
+    .from("articles")
+    .leftJoin("comments", "articles.article_id", "comments.article_id")
+    .count({ comment_count: "comments.comments_id" })
+    .groupBy("articles.article_id")
+    .orderBy(sort_by || "created_at", order || "desc")
+    .modify(query => {
+      if (author) {
+        query.where("articles.author", "=", author);
+      }
+      if (topic) {
+        query.where("articles.topic", "=", topic);
+      }
+    })
+    .then(articles => {
+      return (articles) ;
+    });
 };

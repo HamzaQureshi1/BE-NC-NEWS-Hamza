@@ -3,7 +3,7 @@ const { handle405Errors } = require("../error-handler/error-handler");
 const articlesRouter = require("express").Router();
 
 
-articlesRouter.route("/").get(getAllArticles)
+articlesRouter.route("/").get(getAllArticles).all(handle405Errors)
 
 articlesRouter
   .route("/:article_id")

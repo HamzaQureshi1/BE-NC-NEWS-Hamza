@@ -312,24 +312,6 @@ describe("/", () => {
       });
     });
   });
-  describe("/articles", () => {
-    it("GET 200 returns an articles array of artcile objects ", () => {
-      return request(app)
-        .get("/api/articles")
-        .expect(200)
-        .then(response => {
-          expect(response.body.articles[0]).to.have.keys(
-            "author",
-            "title",
-            "article_id",
-            "topic",
-            "created_at",
-            "votes",
-            "comment_count"
-          );
-        });
-    });
-  });
   describe("/comments/:comment_id", () => {
     it("PATCH 200 and responds with comment with updated votes", () => {
       return request(app)
@@ -393,7 +375,7 @@ describe("/", () => {
     it("PATCH 404 when comment_id cant b found", () => {
       return request(app)
         .patch("/api/comments/1000")
-.send({inc_votes:10})
+        .send({ inc_votes: 10 })
         .expect(404)
         .then(response => {
           expect(response.body.msg).to.eql(`Error status 404`);
@@ -408,17 +390,159 @@ describe("/", () => {
     it("DELETE 404 when comment_id cant be found ", () => {
       return request(app)
         .delete("/api/comments/1000")
-        .expect(404).then((response) => {expect(response.body.msg).to.eql(`Error status 404`)});
+        .expect(404)
+        .then(response => {
+          expect(response.body.msg).to.eql(`Error status 404`);
+        });
     });
-     it("DELETE 400 when passed an invalid comment_id ", () => {
-       return request(app)
-         .delete("/api/comments/helo")
-         .expect(400)
-         .then(response => {
-           expect(response.body.msg).to.eql(
-             'delete from "comments" where "comments_id" = $1 - invalid input syntax for integer: "helo"'
-           );
-         });
-     });
+    it("DELETE 400 when passed an invalid comment_id ", () => {
+      return request(app)
+        .delete("/api/comments/helo")
+        .expect(400)
+        .then(response => {
+          expect(response.body.msg).to.eql(
+            'delete from "comments" where "comments_id" = $1 - invalid input syntax for integer: "helo"'
+          );
+        });
+    });
+  });
+
+  describe("/articles", () => {
+    it("GET 200 returns an articles array of artcile objects ", () => {
+      return request(app)
+        .get("/api/articles")
+        .expect(200)
+        .then(response => {
+          expect(response.body.articles[0]).to.have.keys(
+            "author",
+            "title",
+            "article_id",
+            "topic",
+            "created_at",
+            "votes",
+            "comment_count"
+          );
+          expect(response.body.articles).to.have.length(12);
+        });
+    });
+      it("GET 200 returns an articles array of artcile objects ", () => {
+        return request(app)
+          .get("/api/articles")
+          .expect(200)
+          .then(response => {
+            expect(response.body.articles[0]).to.eql(
+              {
+                article_id:1,
+                title:'Living in the shadow of a great man',
+                created_at:'2018-11-15T12:21:54.171Z',
+                votes:100,
+                topic:"mitch",
+                author:"butter_bridge",
+                comment_count:"13"
+
+              }
+            );
+            
+          });
+      });
+      it("GET 200 returns an articles array of artcile objects ", () => {
+        return request(app)
+          .get("/api/articles?sort_by=article_id")
+          .expect(200)
+          .then(response => {
+            expect(response.body.articles[0]).to.eql({
+              article_id: 12,
+              title: "Moustache",
+              created_at: "1974-11-26T12:21:54.171Z",
+              votes: 0,
+              topic: "mitch",
+              author: "butter_bridge",
+              comment_count: "0"
+            });
+          });
+      });
+      it("GET 200 returns an articles array of artcile objects ", () => {
+        return request(app)
+          .get("/api/articles?sort_by=article_id&order=asc")
+          .expect(200)
+          .then(response => {
+            expect(response.body.articles[0]).to.eql({
+              article_id: 1,
+              title: "Living in the shadow of a great man",
+              created_at: "2018-11-15T12:21:54.171Z",
+              votes: 100,
+              topic: "mitch",
+              author: "butter_bridge",
+              comment_count: "13"
+            });
+          });
+      });
+       it("GET 200 returns an articles array of artcile objects ", () => {
+         return request(app)
+           .get("/api/articles?sort_by=article_id&order=asc&author=butter_bridge")
+           .expect(200)
+           .then(response => {
+             expect(response.body.articles[0]).to.eql({
+               article_id: 1,
+               title: "Living in the shadow of a great man",
+               created_at: "2018-11-15T12:21:54.171Z",
+               votes: 100,
+               topic: "mitch",
+               author: "butter_bridge",
+               comment_count: "13"
+             });
+           });
+       });
+        it("GET 200 returns an articles array of artcile objects ", () => {
+          return request(app)
+            .get(
+              "/api/articles?sort_by=article_id&order=asc&author=butter_bridge&topic=mitch"
+            )
+            .expect(200)
+            .then(response => {
+              expect(response.body.articles[0]).to.eql({
+                article_id: 1,
+                title: "Living in the shadow of a great man",
+                created_at: "2018-11-15T12:21:54.171Z",
+                votes: 100,
+                topic: "mitch",
+                author: "butter_bridge",
+                comment_count: "13"
+              });
+            });
+        });
+        it("GET 400 when sort-by, order,author or topic is does not exist ", () => {
+          return request(app)
+            .get(
+              "/api/articles?sort_by=arti1cle_id&order=asc&author=butter_bridge&topic=mitch"
+            )
+            .expect(400)
+            .then(response => {
+              expect(response.body.msg).to.eql(
+                'select "articles"."article_id", "articles"."author", "articles"."created_at", "articles"."title", "articles"."topic", "articles"."votes", count("comments"."comments_id") as "comment_count" from "articles" left join "comments" on "articles"."article_id" = "comments"."article_id" where "articles"."author" = $1 and "articles"."topic" = $2 group by "articles"."article_id" order by "arti1cle_id" asc - column "arti1cle_id" does not exist'
+              );
+            });
+        });
+        it("GET 404 incorrect route", () => {
+          return request(app)
+            .get("/api/article")
+            .expect(404)
+            .then(response => {
+              expect(response.body.msg).to.equal(`invalid route`);
+            });
+        });
+        it("405 error for invalid method", () => {
+          const invalidMethods = ["patch", "post", "put", "delete"];
+          const methodsPromises = invalidMethods.map(methods => {
+            return request(app)
+              [methods]("/api/articles")
+              .expect(405)
+              .then(response => {
+                expect(response.body.msg).to.equal("invalid method");
+              });
+          });
+          return Promise.all(methodsPromises);
+        });
+
   });
 });
