@@ -45,7 +45,14 @@ exports.fetchCommentsByArticleId = (sort_by, order, article_id) => {
     .where("comments.article_id", "=", article_id)
     .orderBy(sort_by || "created_at", order || "desc")
     .then(comments => {
-      return {comments: comments}
+      if (comments.length === 0) {
+        return Promise.reject({
+          status: 404,
+          msg: `Error status 404`
+        });
+      }
+      
+      else return {comments: comments}
     });
 };
 
@@ -54,13 +61,19 @@ exports.addCommentByArticleId = (article_id, username, body) => {
     .insert({ body: body, author: username, article_id: article_id })
     .into("comments")
     .returning("*")
-    .then(([comment]) => {
-      return comment;
+    .then((comment) => {
+      if (comment.length === 0) {
+        return Promise.reject({
+          status: 404,
+          msg: `Error status 404`
+        });
+      } else
+      return {comment: comment}
     });
 };
 
 exports.fetchAllArticles = (sort_by, order, author, topic) => {
-  console.log(author)
+  
   return connection
     .select(
       "articles.article_id",
@@ -72,7 +85,7 @@ exports.fetchAllArticles = (sort_by, order, author, topic) => {
     )
     .from("articles")
     .leftJoin("comments", "articles.article_id", "comments.article_id")
-    .count({ comment_count: "comments.comments_id" })
+    .count({ comment_count: "comments.comment_id" })
     .groupBy("articles.article_id")
     .orderBy(sort_by || "created_at", order || "desc")
     .modify(query => {
@@ -84,6 +97,67 @@ exports.fetchAllArticles = (sort_by, order, author, topic) => {
       }
     })
     .then(articles => {
-      return (articles) ;
+      if (articles.length < 1) {
+        return Promise.all([
+          [],
+          checkIfTopicExist(topic),
+          checkIfAuthorExist(author)
+        ]);
+      } else {
+        return articles;
+
+      }
     });
+
 };
+
+function checkIfExist(article_id) {
+  return connection
+    .select("*")
+    .from("articles")
+    .where("article_id", article_id)
+    .then(articles => {
+      if (articles.length < 1) {
+        return Promise.reject({
+          status: "404",
+          msg: "Article does not exist"
+        });
+      }
+    });
+}
+
+function checkIfTopicExist(topic) {
+  if (!topic) {
+    return true;
+  }
+  return connection
+    .select("*")
+    .from("topics")
+    .where("slug", topic)
+    .then(topic => {
+      if (topic.length < 1) {
+        return Promise.reject({
+          status: "404",
+          msg: "Not found topic doesn't exist"
+        });
+      }
+    });
+}
+
+function checkIfAuthorExist(author) {
+  if (!author) {
+    return true;
+  }
+  return connection
+    .select("*")
+    .from("users")
+    .where("username", author)
+    .then(user => {
+      if (user.length < 1) {
+        return Promise.reject({
+          status: "404",
+          msg: "Not found author doesn't exist"
+        });
+      }
+    });
+}

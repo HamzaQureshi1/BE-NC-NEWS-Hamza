@@ -4,7 +4,7 @@ exports.updateVotesForComments = (req,res,next) => {
 const changes = (req.body)
 
 const {comment_id} = req.params
-  changeVotesByComments(changes, comment_id).then((comment) => res.status(200).send({comment})).catch(next)
+  changeVotesByComments(changes, comment_id).then((comment) => res.status(200).send(comment)).catch(next)
 }
 
 exports.deleteCommentByCommentId = (req,res,next) => {

@@ -9,7 +9,7 @@ exports.selectUserByUsername = (username) => {
       return Promise.reject({
       status: 404,
       msg: 'Error status 404'
-    })} else {return user}
+    })} else return {user:user[0]}
   });
 
 };

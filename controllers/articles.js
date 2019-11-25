@@ -27,7 +27,7 @@ exports.postCommentByArticleId =(req,res,next) => {
   addCommentByArticleId(article_id, username, body)
     .then(comment => {
       
-      res.status(201).send({ comment })
+      res.status(201).send( comment )
   
   
   })

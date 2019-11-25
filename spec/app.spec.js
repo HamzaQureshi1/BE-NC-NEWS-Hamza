@@ -56,8 +56,8 @@ describe("/", () => {
         .get("/api/users/butter_bridge")
         .expect(200)
         .then(({ body }) => {
-          expect(body).to.be.an("object");
-          expect(body).to.deep.equal({
+          expect(body.user).to.be.an("object");
+          expect(body.user).to.deep.equal({
             username: "butter_bridge",
             avatar_url:
               "https://www.healthytherapies.com/wp-content/uploads/2016/06/Lime3.jpg",
@@ -283,6 +283,16 @@ describe("/", () => {
           });
         });
     });
+    it("GET 404 returned when provided a non existent author", () => {
+      return request(app)
+        .get("/api/articles/1000/comments")
+        .expect(404)
+        .then(response => {
+          expect(response.body.msg).to.eql(
+            'Error status 404'
+          );
+        });
+    });
     it("GET 400 returnns error when passed sort_by and order which do not exist", () => {
       return request(app)
         .get("/api/articles/5/comments?sort_by=hello&order=afsa")
@@ -299,9 +309,18 @@ describe("/", () => {
         .send({ username: "icellusedkars", body: "Yo" })
         .expect(201)
         .then(response => {
-          expect(response.body.comment).to.be.an("object");
-          expect(response.body.comment.author).to.equal("icellusedkars");
-          expect(response.body.comment.body).to.equal("Yo");
+          expect(response.body.comment[0]).to.be.an("object");
+          expect(response.body.comment[0].author).to.equal("icellusedkars");
+          expect(response.body.comment[0].body).to.equal("Yo");
+        });
+    });
+    it("POST 404 returned when trying to post to article_id that does not exist", () => {
+      return request(app)
+        .post("/api/articles/100000/comments")
+        .send({ username: "icellusedkars", body: "Yo" })
+        .expect(400)
+        .then(response => {
+          expect(response.body.msg).to.eql('insert into "comments" ("article_id", "author", "body") values ($1, $2, $3) returning * - insert or update on table "comments" violates foreign key constraint "comments_article_id_foreign"')
         });
     });
     it("405 error for invalid method", () => {
@@ -323,8 +342,8 @@ describe("/", () => {
         .send({ inc_votes: 10 })
         .expect(200)
         .then(response => {
-          expect(response.body.comment.comment).to.eql({
-            comments_id: 10,
+          expect(response.body.comment).to.eql({
+            comment_id: 10,
             author: "icellusedkars",
             article_id: 1,
             votes: 10,
@@ -339,8 +358,8 @@ describe("/", () => {
         .send({ inc_votes: -5 })
         .expect(200)
         .then(response => {
-          expect(response.body.comment.comment).to.eql({
-            comments_id: 10,
+          expect(response.body.comment).to.eql({
+            comment_id: 10,
             author: "icellusedkars",
             article_id: 1,
             votes: -5,
@@ -356,18 +375,18 @@ describe("/", () => {
         .expect(400)
         .then(response => {
           expect(response.body.msg).to.eql(
-            'update "comments" set "votes" = "votes" + $1 where "comments"."comments_id" = $2 returning * - invalid input syntax for integer: "NaN"'
+            'update "comments" set "votes" = "votes" + $1 where "comments"."comment_id" = $2 returning * - invalid input syntax for integer: "NaN"'
           );
         });
     });
-    it("PATCH 200 and responds with comment with updated votes", () => {
+    it("PATCH 200 and responds with comment with updated votes when not sent a body", () => {
       return request(app)
         .patch("/api/comments/10")
 
         .expect(200)
         .then(response => {
-          expect(response.body.comment.comment).to.eql({
-            comments_id: 10,
+          expect(response.body.comment).to.eql({
+            comment_id: 10,
             author: "icellusedkars",
             article_id: 1,
             votes: 0,
@@ -405,7 +424,7 @@ describe("/", () => {
         .expect(400)
         .then(response => {
           expect(response.body.msg).to.eql(
-            'delete from "comments" where "comments_id" = $1 - invalid input syntax for integer: "helo"'
+            'delete from "comments" where "comment_id" = $1 - invalid input syntax for integer: "helo"'
           );
         });
     });
@@ -523,10 +542,34 @@ describe("/", () => {
             .expect(400)
             .then(response => {
               expect(response.body.msg).to.eql(
-                'select "articles"."article_id", "articles"."author", "articles"."created_at", "articles"."title", "articles"."topic", "articles"."votes", count("comments"."comments_id") as "comment_count" from "articles" left join "comments" on "articles"."article_id" = "comments"."article_id" where "articles"."author" = $1 and "articles"."topic" = $2 group by "articles"."article_id" order by "arti1cle_id" asc - column "arti1cle_id" does not exist'
+                'select "articles"."article_id", "articles"."author", "articles"."created_at", "articles"."title", "articles"."topic", "articles"."votes", count("comments"."comment_id") as "comment_count" from "articles" left join "comments" on "articles"."article_id" = "comments"."article_id" where "articles"."author" = $1 and "articles"."topic" = $2 group by "articles"."article_id" order by "arti1cle_id" asc - column "arti1cle_id" does not exist'
               );
             });
         });
+    it("GET 400 when sort-by, order,author or topic is does not exist ", () => {
+      return request(app)
+        .get(
+          "/api/articles?sort_by=article_id&order=asc&author=butter_bridge&topic=not-a-topic"
+        )
+        .expect(404)
+        .then(response => {
+          expect(response.body.msg).to.eql("Not found topic doesn't exist"
+            
+          );
+        });
+    });
+    it("GET 400 when sort-by, order,author or topic is does not exist ", () => {
+      return request(app)
+        .get(
+          "/api/articles?sort_by=article_id&order=asc&author=butter_bridg"
+        )
+        .expect(404)
+        .then(response => {
+          expect(response.body.msg).to.eql("Not found author doesn't exist"
+
+          );
+        });
+    });
         it("GET 404 incorrect route", () => {
           return request(app)
             .get("/api/article")
