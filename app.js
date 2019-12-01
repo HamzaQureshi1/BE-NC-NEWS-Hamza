@@ -1,15 +1,21 @@
-const express = require('express')
-const apiRouter = require('./routes/apiRouter')
-const {invalidRoute, handle405Errors, handleCustomErrors, psqlErrors} = require('./error-handler/error-handler')
+const express = require("express");
+const apiRouter = require("./routes/apiRouter");
+const { invalidRoute } = require("./error-handler/error-handler");
+const { handle405Errors } = require("./error-handler/error-handler");
+const { handleCustomErrors } = require("./error-handler/error-handler");
+const { psqlErrors } = require("./error-handler/error-handler");
 
-const app = express()
-app.use(express.json())
-app.use('/api',apiRouter)
-app.use(handleCustomErrors)
-app.use(psqlErrors)
-app.use(invalidRoute)
-app.use(handle405Errors)
-// app.all("/*", (req, res, next) => res.status(404).send("Route not found"));this will catch any routes not found in our app
+const app = express();
+app.use(express.json());
+app.use("/api", apiRouter);
+app.all("/*", invalidRoute);
+app.use(handleCustomErrors);
+app.use(psqlErrors);
+app.use(handle405Errors);
 
+// app.all("/api",(req, res, next) => {
+// console.log("hello");
+// res.status(4).send({ msg: "Method denied." });
+// });
 
 module.exports = app;

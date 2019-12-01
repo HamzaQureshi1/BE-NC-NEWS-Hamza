@@ -28,7 +28,7 @@ describe("/", () => {
           [methods]("/api/topics")
           .expect(405)
           .then(response => {
-            expect(response.body.msg).to.equal("invalid method");
+            expect(response.body.msg).to.equal("Method denied.");
           });
       });
       return Promise.all(methodsPromises);
@@ -80,7 +80,7 @@ describe("/", () => {
           [methods]("/api/users/butter_bridge")
           .expect(405)
           .then(response => {
-            expect(response.body.msg).to.equal("invalid method");
+            expect(response.body.msg).to.equal("Method denied.");
           });
       });
     });
@@ -93,17 +93,17 @@ describe("/", () => {
         .then(response => {
           expect(response.body).to.be.an("object");
           expect(response.body).to.eql({
-            article:
-            {
-            article_id: 1,
-            title: "Living in the shadow of a great man",
-            body: "I find this existence challenging",
-            votes: 100,
-            topic: "mitch",
-            author: "butter_bridge",
-            created_at: "2018-11-15T12:21:54.171Z",
-            comment_count: "13"
-          }});
+            article: {
+              article_id: 1,
+              title: "Living in the shadow of a great man",
+              body: "I find this existence challenging",
+              votes: 100,
+              topic: "mitch",
+              author: "butter_bridge",
+              created_at: "2018-11-15T12:21:54.171Z",
+              comment_count: "13"
+            }
+          });
           expect(response.body.article).to.have.keys([
             "article_id",
             "title",
@@ -141,15 +141,16 @@ describe("/", () => {
         .expect(200)
         .then(response => {
           expect(response.body).to.eql({
-            article:{
-            article_id: 1,
-            title: "Living in the shadow of a great man",
-            body: "I find this existence challenging",
-            votes: 110,
-            topic: "mitch",
-            author: "butter_bridge",
-            created_at: "2018-11-15T12:21:54.171Z"
-          }});
+            article: {
+              article_id: 1,
+              title: "Living in the shadow of a great man",
+              body: "I find this existence challenging",
+              votes: 110,
+              topic: "mitch",
+              author: "butter_bridge",
+              created_at: "2018-11-15T12:21:54.171Z"
+            }
+          });
         });
     });
     it("PATCH : 200 and responds with article with an updated votes ", () => {
@@ -159,15 +160,16 @@ describe("/", () => {
         .expect(200)
         .then(response => {
           expect(response.body).to.eql({
-            article:{
-            article_id: 1,
-            title: "Living in the shadow of a great man",
-            body: "I find this existence challenging",
-            votes: 90,
-            topic: "mitch",
-            author: "butter_bridge",
-            created_at: "2018-11-15T12:21:54.171Z"
-          }});
+            article: {
+              article_id: 1,
+              title: "Living in the shadow of a great man",
+              body: "I find this existence challenging",
+              votes: 90,
+              topic: "mitch",
+              author: "butter_bridge",
+              created_at: "2018-11-15T12:21:54.171Z"
+            }
+          });
         });
     });
     it("PATCH : 200 and responds with article with an updated votes ", () => {
@@ -176,15 +178,17 @@ describe("/", () => {
 
         .expect(200)
         .then(response => {
-          expect(response.body).to.eql({article:{
-            article_id: 1,
-            title: "Living in the shadow of a great man",
-            body: "I find this existence challenging",
-            votes: 100,
-            topic: "mitch",
-            author: "butter_bridge",
-            created_at: "2018-11-15T12:21:54.171Z"
-          }});
+          expect(response.body).to.eql({
+            article: {
+              article_id: 1,
+              title: "Living in the shadow of a great man",
+              body: "I find this existence challenging",
+              votes: 100,
+              topic: "mitch",
+              author: "butter_bridge",
+              created_at: "2018-11-15T12:21:54.171Z"
+            }
+          });
         });
     });
     it("PATCH:400 if passed invalid data type for inc_votes", () => {
@@ -214,7 +218,7 @@ describe("/", () => {
           [methods]("/api/articles/1")
           .expect(405)
           .then(response => {
-            expect(response.body.msg).to.equal("invalid method");
+            expect(response.body.msg).to.equal("Method denied.");
           });
       });
     });
@@ -244,12 +248,20 @@ describe("/", () => {
           expect(response.body.comments[0]).to.have.keys(
             "comment_id",
             "author",
-            
+
             "votes",
             "created_at",
             "body"
           );
           expect(response.body.comments).to.be.an("array");
+        });
+    });
+    it("GET 200 returns empty array when article exists but comments dont", () => {
+      return request(app)
+        .get("/api/articles/2/comments")
+        .expect(200)
+        .then(response => {
+          expect(response.body).to.be.an("array");
         });
     });
     it("GET 200 returns an array of comments sorted by created_at as default and in descending order by default", () => {
@@ -260,7 +272,7 @@ describe("/", () => {
           expect(response.body.comments[0]).to.eql({
             comment_id: 14,
             author: "icellusedkars",
-            
+
             votes: 16,
             created_at: "2004-11-25T12:36:03.389Z",
             body:
@@ -276,7 +288,7 @@ describe("/", () => {
           expect(response.body.comments[0]).to.eql({
             comment_id: 15,
             author: "butter_bridge",
-            
+
             votes: 1,
             created_at: "2003-11-26T12:36:03.389Z",
             body: "I am 100% sure that we're not completely sure."
@@ -288,9 +300,7 @@ describe("/", () => {
         .get("/api/articles/1000/comments")
         .expect(404)
         .then(response => {
-          expect(response.body.msg).to.eql(
-            'Error status 404'
-          );
+          expect(response.body.msg).to.eql("Error status 404");
         });
     });
     it("GET 400 returnns error when passed sort_by and order which do not exist", () => {
@@ -309,18 +319,20 @@ describe("/", () => {
         .send({ username: "icellusedkars", body: "Yo" })
         .expect(201)
         .then(response => {
-          expect(response.body.comment[0]).to.be.an("object");
-          expect(response.body.comment[0].author).to.equal("icellusedkars");
-          expect(response.body.comment[0].body).to.equal("Yo");
+          expect(response.body).to.be.an("object");
+          expect(response.body.comment.author).to.equal("icellusedkars");
+          expect(response.body.comment.body).to.equal("Yo");
         });
     });
     it("POST 404 returned when trying to post to article_id that does not exist", () => {
       return request(app)
         .post("/api/articles/100000/comments")
         .send({ username: "icellusedkars", body: "Yo" })
-        .expect(400)
+        .expect(404)
         .then(response => {
-          expect(response.body.msg).to.eql('insert into "comments" ("article_id", "author", "body") values ($1, $2, $3) returning * - insert or update on table "comments" violates foreign key constraint "comments_article_id_foreign"')
+          expect(response.body.msg).to.eql(
+            'insert into "comments" ("article_id", "author", "body") values ($1, $2, $3) returning * - insert or update on table "comments" violates foreign key constraint "comments_article_id_foreign"'
+          );
         });
     });
     it("405 error for invalid method", () => {
@@ -330,7 +342,7 @@ describe("/", () => {
           [methods]("/api/articles/1/comments")
           .expect(405)
           .then(response => {
-            expect(response.body.msg).to.equal("invalid method");
+            expect(response.body.msg).to.equal("Method denied.");
           });
       });
     });
@@ -431,7 +443,7 @@ describe("/", () => {
   });
 
   describe("/articles", () => {
-    it("GET 200 returns an articles array of artcile objects ", () => {
+    it("GET 200 returns an articles array of article objects ", () => {
       return request(app)
         .get("/api/articles")
         .expect(200)
@@ -448,104 +460,114 @@ describe("/", () => {
           expect(response.body.articles).to.have.length(12);
         });
     });
-      it("GET 200 returns an articles array of artcile objects ", () => {
-        return request(app)
-          .get("/api/articles")
-          .expect(200)
-          .then(response => {
-            expect(response.body.articles[0]).to.eql(
-              {
-                article_id:1,
-                title:'Living in the shadow of a great man',
-                created_at:'2018-11-15T12:21:54.171Z',
-                votes:100,
-                topic:"mitch",
-                author:"butter_bridge",
-                comment_count:"13"
+    it("GET 200 returns an articles array of article objects ", () => {
+      return request(app)
+        .get("/api/articles")
+        .expect(200)
+        .then(response => {
+          expect(response.body.articles[0]).to.eql({
+            article_id: 1,
+            title: "Living in the shadow of a great man",
+            created_at: "2018-11-15T12:21:54.171Z",
+            votes: 100,
+            topic: "mitch",
+            author: "butter_bridge",
+            comment_count: "13"
+          });
+        });
+    });
+    it("GET 200 returns an articles array of article objects when sort by = article_id ", () => {
+      return request(app)
+        .get("/api/articles?sort_by=article_id")
+        .expect(200)
+        .then(response => {
+          expect(response.body.articles[0]).to.eql({
+            article_id: 12,
+            title: "Moustache",
+            created_at: "1974-11-26T12:21:54.171Z",
+            votes: 0,
+            topic: "mitch",
+            author: "butter_bridge",
+            comment_count: "0"
+          });
+        });
+    });
+    it("GET 200 returns an articles array of article objects when sort by = article_id and order = asc ", () => {
+      return request(app)
+        .get("/api/articles?sort_by=article_id&order=asc")
+        .expect(200)
+        .then(response => {
+          expect(response.body.articles[0]).to.eql({
+            article_id: 1,
+            title: "Living in the shadow of a great man",
+            created_at: "2018-11-15T12:21:54.171Z",
+            votes: 100,
+            topic: "mitch",
+            author: "butter_bridge",
+            comment_count: "13"
+          });
+        });
+    });
+    it("GET 200 returns an articles array of article objects when sort_by = article_id, order=asc and author=butter_bridge ", () => {
+      return request(app)
+        .get("/api/articles?sort_by=article_id&order=asc&author=butter_bridge")
+        .expect(200)
+        .then(response => {
+          expect(response.body.articles[0]).to.eql({
+            article_id: 1,
+            title: "Living in the shadow of a great man",
+            created_at: "2018-11-15T12:21:54.171Z",
+            votes: 100,
+            topic: "mitch",
+            author: "butter_bridge",
+            comment_count: "13"
+          });
+        });
+    });
+    it("GET 200 returns an articles array of article objects when sort_by=article_id, order=asc, author = butter_bridge and topic=mitch ", () => {
+      return request(app)
+        .get(
+          "/api/articles?sort_by=article_id&order=asc&author=butter_bridge&topic=mitch"
+        )
+        .expect(200)
+        .then(response => {
+          expect(response.body.articles[0]).to.eql({
+            article_id: 1,
+            title: "Living in the shadow of a great man",
+            created_at: "2018-11-15T12:21:54.171Z",
+            votes: 100,
+            topic: "mitch",
+            author: "butter_bridge",
+            comment_count: "13"
+          });
+        });
+    });
+    it('GET 200 returns an empty array when author exists but has nor articles', () => {
+      return request(app).get("/api/articles?author=lurker").expect(200).then(response => {
 
-              }
-            );
-            
-          });
-      });
-      it("GET 200 returns an articles array of artcile objects ", () => {
-        return request(app)
-          .get("/api/articles?sort_by=article_id")
-          .expect(200)
-          .then(response => {
-            expect(response.body.articles[0]).to.eql({
-              article_id: 12,
-              title: "Moustache",
-              created_at: "1974-11-26T12:21:54.171Z",
-              votes: 0,
-              topic: "mitch",
-              author: "butter_bridge",
-              comment_count: "0"
-            });
-          });
-      });
-      it("GET 200 returns an articles array of artcile objects ", () => {
-        return request(app)
-          .get("/api/articles?sort_by=article_id&order=asc")
-          .expect(200)
-          .then(response => {
-            expect(response.body.articles[0]).to.eql({
-              article_id: 1,
-              title: "Living in the shadow of a great man",
-              created_at: "2018-11-15T12:21:54.171Z",
-              votes: 100,
-              topic: "mitch",
-              author: "butter_bridge",
-              comment_count: "13"
-            });
-          });
-      });
-       it("GET 200 returns an articles array of artcile objects ", () => {
-         return request(app)
-           .get("/api/articles?sort_by=article_id&order=asc&author=butter_bridge")
-           .expect(200)
-           .then(response => {
-             expect(response.body.articles[0]).to.eql({
-               article_id: 1,
-               title: "Living in the shadow of a great man",
-               created_at: "2018-11-15T12:21:54.171Z",
-               votes: 100,
-               topic: "mitch",
-               author: "butter_bridge",
-               comment_count: "13"
-             });
-           });
-       });
-        it("GET 200 returns an articles array of artcile objects ", () => {
-          return request(app)
-            .get(
-              "/api/articles?sort_by=article_id&order=asc&author=butter_bridge&topic=mitch"
-            )
-            .expect(200)
-            .then(response => {
-              expect(response.body.articles[0]).to.eql({
-                article_id: 1,
-                title: "Living in the shadow of a great man",
-                created_at: "2018-11-15T12:21:54.171Z",
-                votes: 100,
-                topic: "mitch",
-                author: "butter_bridge",
-                comment_count: "13"
-              });
-            });
+    expect(response.body.articles[0]).to.eql([])
+    console.log(response.body.articles)
+      })
+    });
+    it('GET 200 returns an empty array when author exists but has nor articles', () => {
+      return request(app).get("/api/articles?topic=paper").expect(200).then(response => {
+
+        expect(response.body.articles[0]).to.eql([])
+        console.log(response.body.articles)
+      })
+    });
+    it("GET 400 when sort-by, order,author or topic is does not exist ", () => {
+      return request(app)
+        .get(
+          "/api/articles?sort_by=arti1cle_id&order=asc&author=butter_bridge&topic=mitch"
+        )
+        .expect(400)
+        .then(response => {
+          expect(response.body.msg).to.eql(
+            'select "articles"."article_id", "articles"."author", "articles"."created_at", "articles"."title", "articles"."topic", "articles"."votes", count("comments"."comment_id") as "comment_count" from "articles" left join "comments" on "articles"."article_id" = "comments"."article_id" where "articles"."author" = $1 and "articles"."topic" = $2 group by "articles"."article_id" order by "arti1cle_id" asc - column "arti1cle_id" does not exist'
+          );
         });
-        it("GET 400 when sort-by, order,author or topic is does not exist ", () => {
-          return request(app)
-            .get(
-              "/api/articles?sort_by=arti1cle_id&order=asc&author=butter_bridge&topic=mitch"
-            )
-            .expect(400)
-            .then(response => {
-              expect(response.body.msg).to.eql(
-                'select "articles"."article_id", "articles"."author", "articles"."created_at", "articles"."title", "articles"."topic", "articles"."votes", count("comments"."comment_id") as "comment_count" from "articles" left join "comments" on "articles"."article_id" = "comments"."article_id" where "articles"."author" = $1 and "articles"."topic" = $2 group by "articles"."article_id" order by "arti1cle_id" asc - column "arti1cle_id" does not exist'
-              );
-            });
-        });
+    });
     it("GET 400 when sort-by, order,author or topic is does not exist ", () => {
       return request(app)
         .get(
@@ -553,43 +575,49 @@ describe("/", () => {
         )
         .expect(404)
         .then(response => {
-          expect(response.body.msg).to.eql("Not found topic doesn't exist"
-            
-          );
+          expect(response.body.msg).to.eql("Not found topic doesn't exist");
         });
     });
-    it("GET 400 when sort-by, order,author or topic is does not exist ", () => {
+    it("GET 404 when sort-by, order,author or topic is does not exist ", () => {
       return request(app)
-        .get(
-          "/api/articles?sort_by=article_id&order=asc&author=butter_bridg"
-        )
+        .get("/api/articles?sort_by=article_id&order=asc&author=butter_bridg")
         .expect(404)
         .then(response => {
-          expect(response.body.msg).to.eql("Not found author doesn't exist"
-
-          );
+          expect(response.body.msg).to.eql("Not found author doesn't exist");
         });
     });
-        it("GET 404 incorrect route", () => {
-          return request(app)
-            .get("/api/article")
-            .expect(404)
-            .then(response => {
-              expect(response.body.msg).to.equal(`invalid route`);
-            });
+    it("GET 404 incorrect route", () => {
+      return request(app)
+        .get("/api/article")
+        .expect(404)
+        .then(response => {
+          expect(response.body.msg).to.equal(`invalid route`);
         });
-        it("405 error for invalid method", () => {
-          const invalidMethods = ["patch", "post", "put", "delete"];
-          const methodsPromises = invalidMethods.map(methods => {
-            return request(app)
-              [methods]("/api/articles")
-              .expect(405)
-              .then(response => {
-                expect(response.body.msg).to.equal("invalid method");
-              });
+    });
+    it("405 error for invalid method", () => {
+      const invalidMethods = ["patch", "post", "put", "delete"];
+      const methodsPromises = invalidMethods.map(methods => {
+        return request(app)
+          [methods]("/api/articles")
+          .expect(405)
+          .then(response => {
+            expect(response.body.msg).to.equal("Method denied.");
           });
-          return Promise.all(methodsPromises);
-        });
-
+      });
+      return Promise.all(methodsPromises);
+    });
+  });
+  describe("DELETE 405 ", () => {
+    it("/api", () => {
+      return (
+        request(app)
+          .delete("/api")
+          // .expect(405)
+          .then(body => {
+            expect(body.status).to.equal(405);
+            expect(body.body.msg).to.equal("Method denied.");
+          })
+      );
+    });
   });
 });

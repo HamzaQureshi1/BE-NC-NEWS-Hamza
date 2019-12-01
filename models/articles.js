@@ -16,7 +16,7 @@ exports.selectArticleByArticleId = article_id => {
           msg: `Error status 404`
         });
       } else {
-        return ({article: article[0]}) 
+        return { article: article[0] };
       }
     });
 };
@@ -40,19 +40,22 @@ exports.changeVotes = (changes, article_id) => {
 
 exports.fetchCommentsByArticleId = (sort_by, order, article_id) => {
   return connection
-    .select("comments.comment_id", "comments.votes", "comments.created_at","comments.author", "comments.body")
+    .select(
+      "comments.comment_id",
+      "comments.votes",
+      "comments.created_at",
+      "comments.author",
+      "comments.body"
+    )
     .from("comments")
     .where("comments.article_id", "=", article_id)
     .orderBy(sort_by || "created_at", order || "desc")
     .then(comments => {
-      if (comments.length === 0) {
-        return Promise.reject({
-          status: 404,
-          msg: `Error status 404`
-        });
+      if (comments.length < 1) {
+        return Promise.all([[], checkIfExist(article_id)]);
+      } else {
+        return { comments: comments };
       }
-      
-      else return {comments: comments}
     });
 };
 
@@ -61,19 +64,13 @@ exports.addCommentByArticleId = (article_id, username, body) => {
     .insert({ body: body, author: username, article_id: article_id })
     .into("comments")
     .returning("*")
-    .then((comment) => {
-      if (comment.length === 0) {
-        return Promise.reject({
-          status: 404,
-          msg: `Error status 404`
-        });
-      } else
-      return {comment: comment}
+    .then(comment => {
+      
+      return { comment: comment[0] };
     });
 };
 
 exports.fetchAllArticles = (sort_by, order, author, topic) => {
-  
   return connection
     .select(
       "articles.article_id",
@@ -97,7 +94,7 @@ exports.fetchAllArticles = (sort_by, order, author, topic) => {
       }
     })
     .then(articles => {
-      if (articles.length < 1) {
+      if (articles.length === 0) {
         return Promise.all([
           [],
           checkIfTopicExist(topic),
@@ -105,10 +102,8 @@ exports.fetchAllArticles = (sort_by, order, author, topic) => {
         ]);
       } else {
         return articles;
-
       }
     });
-
 };
 
 function checkIfExist(article_id) {
@@ -120,7 +115,7 @@ function checkIfExist(article_id) {
       if (articles.length < 1) {
         return Promise.reject({
           status: "404",
-          msg: "Article does not exist"
+          msg: "Error status 404"
         });
       }
     });
