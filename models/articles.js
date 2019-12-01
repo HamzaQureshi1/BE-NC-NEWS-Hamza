@@ -101,7 +101,7 @@ exports.fetchAllArticles = (sort_by, order, author, topic) => {
           checkIfAuthorExist(author)
         ]);
       } else {
-        return articles;
+        return [articles];
       }
     });
 };

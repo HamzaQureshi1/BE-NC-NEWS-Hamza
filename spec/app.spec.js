@@ -545,15 +545,15 @@ describe("/", () => {
     it('GET 200 returns an empty array when author exists but has nor articles', () => {
       return request(app).get("/api/articles?author=lurker").expect(200).then(response => {
 
-    expect(response.body.articles[0]).to.eql([])
-    console.log(response.body.articles)
+    expect(response.body.articles).to.eql([])
+    
       })
     });
     it('GET 200 returns an empty array when author exists but has nor articles', () => {
       return request(app).get("/api/articles?topic=paper").expect(200).then(response => {
 
-        expect(response.body.articles[0]).to.eql([])
-        console.log(response.body.articles)
+        expect(response.body.articles).to.eql([])
+        
       })
     });
     it("GET 400 when sort-by, order,author or topic is does not exist ", () => {
