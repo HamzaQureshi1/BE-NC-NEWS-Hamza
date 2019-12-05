@@ -261,7 +261,8 @@ describe("/", () => {
         .get("/api/articles/2/comments")
         .expect(200)
         .then(response => {
-          expect(response.body).to.be.an("array");
+          
+          expect(response.body.comments).to.be.an("array");
         });
     });
     it("GET 200 returns an array of comments sorted by created_at as default and in descending order by default", () => {
@@ -295,7 +296,7 @@ describe("/", () => {
           });
         });
     });
-    it("GET 404 returned when provided a non existent author", () => {
+    it("GET 404 returned when provided a non existent article id", () => {
       return request(app)
         .get("/api/articles/1000/comments")
         .expect(404)
@@ -542,19 +543,21 @@ describe("/", () => {
           });
         });
     });
-    it('GET 200 returns an empty array when author exists but has nor articles', () => {
-      return request(app).get("/api/articles?author=lurker").expect(200).then(response => {
-
-    expect(response.body.articles).to.eql([])
-    
-      })
+    it("GET 200 returns an empty array when author exists but has nor articles", () => {
+      return request(app)
+        .get("/api/articles?author=lurker")
+        .expect(200)
+        .then(response => {
+          expect(response.body.articles).to.eql([]);
+        });
     });
-    it('GET 200 returns an empty array when author exists but has nor articles', () => {
-      return request(app).get("/api/articles?topic=paper").expect(200).then(response => {
-
-        expect(response.body.articles).to.eql([])
-        
-      })
+    it("GET 200 returns an empty array when author exists but has nor articles", () => {
+      return request(app)
+        .get("/api/articles?topic=paper")
+        .expect(200)
+        .then(response => {
+          expect(response.body.articles).to.eql([]);
+        });
     });
     it("GET 400 when sort-by, order,author or topic is does not exist ", () => {
       return request(app)

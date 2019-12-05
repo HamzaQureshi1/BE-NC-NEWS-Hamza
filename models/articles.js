@@ -51,10 +51,14 @@ exports.fetchCommentsByArticleId = (sort_by, order, article_id) => {
     .where("comments.article_id", "=", article_id)
     .orderBy(sort_by || "created_at", order || "desc")
     .then(comments => {
-      if (comments.length < 1) {
+      // if (comments.length < 1 && !checkIfExist(article_id)) {
+      //   console.log("im in first");
+      // } else
+       if (comments.length < 1) {
+        
         return Promise.all([[], checkIfExist(article_id)]);
       } else {
-        return { comments: comments };
+        return [comments];
       }
     });
 };
@@ -65,7 +69,6 @@ exports.addCommentByArticleId = (article_id, username, body) => {
     .into("comments")
     .returning("*")
     .then(comment => {
-      
       return { comment: comment[0] };
     });
 };
