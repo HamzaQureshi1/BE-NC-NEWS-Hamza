@@ -261,7 +261,6 @@ describe("/", () => {
         .get("/api/articles/2/comments")
         .expect(200)
         .then(response => {
-          
           expect(response.body.comments).to.be.an("array");
         });
     });
@@ -621,6 +620,13 @@ describe("/", () => {
             expect(body.body.msg).to.equal("Method denied.");
           })
       );
+    });
+  });
+  describe("GET /API ", () => {
+    it("returns a  JSON describing all endpoints", () => {
+      return request(app)
+        .get("/api")
+        .expect(200);
     });
   });
 });

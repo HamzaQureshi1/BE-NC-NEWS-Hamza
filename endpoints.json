@@ -23,5 +23,93 @@
         }
       ]
     }
+  },
+  "GET /api/users/:username": {
+    "description": "responds with a a user object with details about the given user",
+  "queries": [],
+  "exampleResponse": {
+    "user": {
+      "username": "butter_bridge",
+      "avatar_url": "https://www.healthytherapies.com/wp-content/uploads/2016/06/Lime3.jpg",
+      "name": "jonny"
+    }
   }
+},
+"GET /api/articles/:article_id": {
+  "description": "responds with an article object for the given article id",
+  "queries": [],
+  "exampleResponse": {
+    "article": {
+      "article_id": 2,
+      "title": "Sony Vaio; or, The Laptop",
+      "body": "Call me Mitchell. Some years ago—never mind how long precisely—having little or no money in my purse, and nothing particular to interest me on shore, I thought I would buy a laptop about a little and see the codey part of the world. It is a way I have of driving off the spleen and regulating the circulation. Whenever I find myself growing grim about the mouth; whenever it is a damp, drizzly November in my soul; whenever I find myself involuntarily pausing before coffin warehouses, and bringing up the rear of every funeral I meet; and especially whenever my hypos get such an upper hand of me, that it requires a strong moral principle to prevent me from deliberately stepping into the street, and methodically knocking people’s hats off—then, I account it high time to get to coding as soon as I can. This is my substitute for pistol and ball. With a philosophical flourish Cato throws himself upon his sword; I quietly take to the laptop. There is nothing surprising in this. If they but knew it, almost all men in their degree, some time or other, cherish very nearly the same feelings towards the the Vaio with me.",
+      "votes": 0,
+      "topic": "mitch",
+      "author": "icellusedkars",
+      "created_at": "2014-11-16T00: 00: 00.000Z",
+      "comment_count": "0"
+    }
+  }
+},
+"PATCH /api/articles/:article_id": {
+  "description": "updates votes and responds with article object",
+  "queries": [],
+  "exampleResponse": {
+    "article": {
+      "article_id": 2,
+      "title": "Sony Vaio; or, The Laptop",
+      "body": "Call me Mitchell. Some years ago—never mind how long precisely—having little or no money in my purse, and nothing particular to interest me on shore, I thought I would buy a laptop about a little and see the codey part of the world. It is a way I have of driving off the spleen and regulating the circulation. Whenever I find myself growing grim about the mouth; whenever it is a damp, drizzly November in my soul; whenever I find myself involuntarily pausing before coffin warehouses, and bringing up the rear of every funeral I meet; and especially whenever my hypos get such an upper hand of me, that it requires a strong moral principle to prevent me from deliberately stepping into the street, and methodically knocking people’s hats off—then, I account it high time to get to coding as soon as I can. This is my substitute for pistol and ball. With a philosophical flourish Cato throws himself upon his sword; I quietly take to the laptop. There is nothing surprising in this. If they but knew it, almost all men in their degree, some time or other, cherish very nearly the same feelings towards the the Vaio with me.",
+      "votes": 0,
+      "topic": "mitch",
+      "author": "icellusedkars",
+      "created_at": "2014-11-16T00: 00: 00.000Z",
+      "comment_count": "0"
+    }
+  }
+},
+"POST /api/articles/:article_id/comments": {
+  "desription": "responds with the posted object",
+  "queries": [
+    "sort_by",
+    "order"
+  ],
+  "exampleResponse": {
+    "comment_id": 19,
+    "author": "lurker",
+    "article_id": 1,
+    "votes": 0,
+    "created_at": "2019-11-21T14: 47: 03.902Z",
+    " body": "blah blah"
+  }
+},
+"GET /api/articles/:article_id/comments": {
+  "description": "responds with an array of comments for the given article_id",
+  "queries": [],
+  "exampleResponse": {
+    "comment_id": 2,
+    " author": "butter_bridge",
+    "article_id": 1,
+    "votes": 14,
+    "created_at": "2016-11-22T12: 36: 03.389Z",
+    "body": "The beautiful thing about treasure is that it exists. Got to find out what kind of sheets these are; not cotton, not rayon, silky."
+  }
+},
+"PATCH /api/comments/:comment_id": {
+  "description": "updates votes on comments object",
+  "exampleResponse": {
+    "count": {
+      "comment_id": 3,
+      "author": "grumpy19",
+      "article_id": 3,
+      "votes": 4,
+      "created_at": "2017-08-31T12:51:40.263Z",
+      "body": "Qui sunt sit voluptas repellendus sed. Voluptatem et repellat fugiat. Rerum doloribus eveniet quidem vero aut sint officiis. Dolor facere et et architecto vero qui et perferendis dolorem. Magni quis ratione adipisci error assumenda ut. Id rerum eos facere sit nihil ipsam officia aspernatur odio."
+    }
+  }
+},
+"DELETE /api/comments/:comment_id": {
+  "description": "Deletes comment by id"
+}
+
+
 }
