@@ -5,7 +5,6 @@
   "main": "index.js",
   "scripts": {
     "setup-dbs": "psql -f ./db/setup.sql",
-    
     "seed": "knex seed:run",
     "test-utils": "mocha spec/utils.spec.js",
     "test-app": "mocha spec/app.spec.js",
@@ -13,7 +12,11 @@
     "migrate-latest": "knex migrate:latest",
     "migrate-rollback": "knex migrate:rollback",
     "seed-development": "npm run setup-dbs && knex seed:run",
-    "seed-test" : "npm run setup-dbs && NODE_ENV=test knex seed:run"
+    "seed-test": "npm run setup-dbs && NODE_ENV=test knex seed:run",
+    "seed:prod": "NODE_ENV=production DB_URL=$(heroku config:get DATABASE_URL) knex seed:run",
+    "migrate-latest:prod": "NODE_ENV=production DB_URL=$(heroku config:get DATABASE_URL) knex migrate:latest",
+    "migrate-rollback:prod": "NODE_ENV=production DB_URL=$(heroku config:get DATABASE_URL) knex migrate:rollback",
+    "start": "node listen.js"
   },
   "repository": {
     "type": "git",
