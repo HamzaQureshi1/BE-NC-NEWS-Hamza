@@ -4,6 +4,8 @@ const { invalidRoute } = require("./error-handler/error-handler");
 const { handle405Errors } = require("./error-handler/error-handler");
 const { handleCustomErrors } = require("./error-handler/error-handler");
 const { psqlErrors } = require("./error-handler/error-handler");
+const cors = require("cors");
+app.use(cors());
 
 const app = express();
 app.use(express.json());
