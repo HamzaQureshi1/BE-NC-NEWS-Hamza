@@ -15,4 +15,16 @@ Installing
 
 2.CD into the directory and launch in your chosen code editor.
 
-3.Install the dependencies that are required for this API by using the following command:
+3.Install the dependencies that are required for this API using npm install
+
+Database
+
+1. You will now need to seed the database using this command : npm run seed-development
+
+2.Create a knexfile and insert the following code:
+
+`javascript sadkjlfsd`
+
+Running tests
+
+1. You can run tests using the command npm run test-app
