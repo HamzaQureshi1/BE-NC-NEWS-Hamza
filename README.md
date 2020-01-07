@@ -19,9 +19,7 @@ Installing
 
 Database
 
-1. You will now need to seed the database using this command : npm run seed-development
-
-2.Create a knexfile and insert the following code:
+1.Create a knexfile and insert the following code:
 
 ```const ENV = process.env.NODE_ENV || "development";
 
@@ -61,6 +59,7 @@ module.exports = { ...customConfig[ENV], ...baseConfig };
 
 If you are using linux you will need to include psql username and password
 
+2.You will now need to seed the database using this command : npm run seed-development
 Running tests
 
 1. You can run tests using the command npm run test-app
