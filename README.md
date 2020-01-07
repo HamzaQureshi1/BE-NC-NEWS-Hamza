@@ -1,6 +1,7 @@
 BE-NC-NEWS-hamza
 Northcoders News API
 
+Hosted Backend:
 https://hamza-nc-news.herokuapp.com/api
 
 This project is a RESTful Application Programming Interface (API) that utilises http methodologies in order to retrieve, edit, add or delete articles, topics, comments and users from a generated news based database.
