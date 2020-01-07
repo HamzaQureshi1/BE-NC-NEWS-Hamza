@@ -56,7 +56,7 @@ const customConfig = {
 };
 
 
-module.exports = { ...customConfig[ENV], ...baseConfig };```
+module.exports = { ...customConfig[ENV], ...baseConfig };`
 
 If you are using linux you will need to include psql username and password
 
