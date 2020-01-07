@@ -23,7 +23,7 @@ Database
 
 2.Create a knexfile and insert the following code:
 
-`const ENV = process.env.NODE_ENV || "development";
+```const ENV = process.env.NODE_ENV || "development";
 
 const baseConfig = {
   client: "pg",
@@ -56,11 +56,10 @@ const customConfig = {
 };
 
 
-module.exports = { ...customConfig[ENV], ...baseConfig };`
+module.exports = { ...customConfig[ENV], ...baseConfig };
+```
 
 If you are using linux you will need to include psql username and password
-
-
 
 Running tests
 
