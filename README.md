@@ -23,7 +23,7 @@ Database
 
 2.Create a knexfile and insert the following code:
 
-````const ENV = process.env.NODE_ENV || "development";
+`const ENV = process.env.NODE_ENV || "development";
 
 const baseConfig = {
   client: "pg",
