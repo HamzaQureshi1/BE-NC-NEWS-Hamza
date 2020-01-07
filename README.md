@@ -1,6 +1,8 @@
 BE-NC-NEWS-hamza
 Northcoders News API
 
+https://hamza-nc-news.herokuapp.com/api
+
 This project is a RESTful Application Programming Interface (API) that utilises http methodologies in order to retrieve, edit, add or delete articles, topics, comments and users from a generated news based database.
 Getting Started
 
@@ -60,7 +62,6 @@ module.exports = { ...customConfig[ENV], ...baseConfig };
 If you are using linux you will need to include psql username and password
 
 2.You will now need to seed the database using this command : npm run seed-development
-
 
 Running tests
 
