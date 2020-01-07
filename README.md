@@ -65,4 +65,3 @@ If you are using linux you will need to include psql username and password
 Running tests
 
 1. You can run tests using the command npm run test-app
-````
