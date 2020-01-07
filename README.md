@@ -60,6 +60,8 @@ module.exports = { ...customConfig[ENV], ...baseConfig };
 If you are using linux you will need to include psql username and password
 
 2.You will now need to seed the database using this command : npm run seed-development
+
+
 Running tests
 
 1. You can run tests using the command npm run test-app
