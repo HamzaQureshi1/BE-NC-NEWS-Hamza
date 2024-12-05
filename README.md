@@ -1,5 +1,5 @@
 BE-NC-NEWS-hamza
-Northcoders News API
+Northcoders News API TEST
 
 Hosted Backend:
 https://hamza-nc-news.herokuapp.com/api
